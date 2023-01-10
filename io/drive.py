@@ -111,7 +111,7 @@ def download_file(file_id):
     return file_content
 
 
-def load_file_to_df(f, verbose=False):
+def load_file_to_df(f, verbose=False, context=None):
     """
     Parses filename, loads the content of the file from Drive, then adds the info contained in the filename
     to the DataFrame before it returns it.
@@ -131,7 +131,11 @@ def load_file_to_df(f, verbose=False):
     """
 
     if verbose:
-        print(f"Starting to download {f['name']}")
+        msg = f"Starting to download {f['name']}"
+        if context is not None:
+            context.log.info(msg)
+        else:
+            print(msg)
 
     filename, ext = f["name"].split(".")
 
@@ -144,7 +148,11 @@ def load_file_to_df(f, verbose=False):
     file_content = download_file(f["id"])
 
     if verbose:
-        print(f"File downloaded in {round(time() - start_time, 2)} seconds")
+        msg = f"File downloaded in {round(time() - start_time, 2)} seconds"
+        if context is not None:
+            context.log.info(msg)
+        else:
+            print(msg)
 
     file_df = pd.read_excel(io=file_content)
 
@@ -156,7 +164,7 @@ def load_file_to_df(f, verbose=False):
     return file_df
 
 
-def load_files_to_df(files=None, dfs_in=None, verbose=False):
+def load_files_to_df(files=None, dfs_in=None, verbose=False, context=None):
     """
     Loads the passed / all files from Drive and concatenates them to a DataFrame.
     This function is intended to be passed to Threads. In that case, aggregator lists can be optionally
@@ -197,11 +205,16 @@ def load_files_to_df(files=None, dfs_in=None, verbose=False):
     malformed_filenames = []
     for f in files:
         try:
-            file_df = load_file_to_df(f, verbose=verbose)
+            file_df = load_file_to_df(f, verbose=verbose, context=context)
             dfs.append(file_df)
         except Exception:
             if verbose:
-                print(f"File name '{f['name']}' is not following the expected format.")
+                msg = f"File name '{f['name']}' is not following the expected format."
+                if context is not None:
+                    context.log.info(msg)
+                else:
+                    print(msg)
+
             malformed_filenames.append(f["name"])
             continue
 
@@ -243,7 +256,7 @@ def parallel_load_files_to_df(thread_count=25, verbose=False, context=None):
     dfs = []
     threads = []
     for chunk in file_chunks:
-        t = Thread(target=load_files_to_df, args=(chunk, dfs, verbose))
+        t = Thread(target=load_files_to_df, args=(chunk, dfs, verbose, context))
         t.start()
         threads.append(t)
 
