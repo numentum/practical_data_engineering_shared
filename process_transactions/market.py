@@ -230,6 +230,12 @@ def add_error(errors, orig_filename, sale_number, error):
 
 
 def transform_market_transactions(df, verbose=False, context=None):
+    msg = f"Received {len(df)} transactions to transform."
+    if context is None:
+        print(msg)
+    else:
+        context.log.info(msg)
+
     # Gather prerequisites of the operations
     products_df = extract_table("products")
     name_to_sku = get_lookup_fn(products_df, from_col="name", to_col="sku")
