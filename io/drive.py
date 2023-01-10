@@ -269,11 +269,22 @@ def parallel_load_files_to_df(thread_count=25, verbose=False, context=None):
     # Split the list of files to equal chunks, one for each thread
     file_chunks = np.array_split(files, thread_count)
 
+    if context is None:
+        print(file_chunks)
+    else:
+        context.log.info(file_chunks)
+
     # Spawn threads
     start_time = time()
     dfs = []
     threads = []
     for chunk in file_chunks:
+        msg = f"Starting chunk with {len(chunk)} files"
+        if context is None:
+            print(msg)
+        else:
+            context.log.info(msg)
+
         t = Thread(target=load_files_to_df, args=(chunk, dfs, verbose, context))
         t.start()
         threads.append(t)
