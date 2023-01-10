@@ -213,7 +213,7 @@ def load_files_to_df(files=None, dfs_in=None, verbose=False):
     return concat_df, malformed_filenames
 
 
-def parallel_load_files_to_df(thread_count=25, verbose=False):
+def parallel_load_files_to_df(thread_count=25, verbose=False, context=None):
     """
     This function spawns parallel threads to speed up loading of files from Drive.
 
@@ -229,8 +229,11 @@ def parallel_load_files_to_df(thread_count=25, verbose=False):
     # Get all files on Drive
     files = list_files()
 
-    if verbose:
-        print(f"Found {len(files)} files")
+    msg = f"Found {len(files)} files"
+    if context is None:
+        print(msg)
+    else:
+        context.log.info(msg)
 
     # Split the list of files to equal chunks, one for each thread
     file_chunks = np.array_split(files, thread_count)
@@ -248,8 +251,11 @@ def parallel_load_files_to_df(thread_count=25, verbose=False):
     for t in threads:
         t.join()
 
-    if verbose:
-        print(f"Loading dataframes from Drive in parallel took {round(time() - start_time, 2)} seconds")
+    msg = f"Loading dataframes from Drive in parallel took {round(time() - start_time, 2)} seconds"
+    if context is None:
+        print(msg)
+    else:
+        context.log.info(msg)
 
     if len(dfs) == 0:
         return pd.DataFrame()
