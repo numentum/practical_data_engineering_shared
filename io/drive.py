@@ -166,6 +166,12 @@ def load_file_to_df(f, verbose=False, context=None):
     file_df["employee"] = employee
     file_df["date"] = date
 
+    msg = f"Returning file '{f['name']}'."
+    if context is not None:
+        context.log.info(msg)
+    else:
+        print(msg)
+
     return file_df
 
 
@@ -215,6 +221,11 @@ def load_files_to_df(files=None, dfs_in=None, verbose=False, context=None):
     # Init list to collect malformed filenames
     malformed_filenames = []
     for f in files:
+        msg = f"Starting file '{f}'"
+        if context is not None:
+            context.log.info(msg)
+        else:
+            print(msg)
         try:
             file_df = load_file_to_df(f, verbose=verbose, context=context)
 
@@ -268,11 +279,6 @@ def parallel_load_files_to_df(thread_count=25, verbose=False, context=None):
 
     # Split the list of files to equal chunks, one for each thread
     file_chunks = np.array_split(files, thread_count)
-
-    if context is None:
-        print(file_chunks)
-    else:
-        context.log.info(file_chunks)
 
     # Spawn threads
     start_time = time()
