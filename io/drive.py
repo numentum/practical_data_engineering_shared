@@ -29,8 +29,6 @@ def create_drive_client(creds_path="./credentials.json"):
     scopes = ["https://www.googleapis.com/auth/drive.readonly"]
 
     if path.isfile(creds_path):
-        if not path.isfile(creds_path):
-            raise FileNotFoundError(f"Credentials JSON at '{creds_path}' does not exist.")
         credentials = service_account.Credentials.from_service_account_file(creds_path)
     else:
         drive_creds = os.getenv("DRIVE_CREDS")
