@@ -140,9 +140,12 @@ def load_file_to_df(f, verbose=False, context=None):
     filename, ext = f["name"].split(".")
 
     if filename.count("__") != 2:
-        raise ValueError(
-            f"File name '{f['name']}' is not following the expected format. Double underscore count should be 2, but it is {filename.count('__')}."
-        )
+        msg = f"File name '{f['name']}' is not following the expected format. Double underscore count should be 2, but it is {filename.count('__')}."
+        if context is not None:
+            context.log.info(msg)
+        else:
+            print(msg)
+        raise ValueError(msg)
 
     location, date, employee = filename.split("__")
 
@@ -208,6 +211,7 @@ def load_files_to_df(files=None, dfs_in=None, verbose=False, context=None):
     for f in files:
         try:
             file_df = load_file_to_df(f, verbose=verbose, context=context)
+            context.log.info(f"Appending {len(file_df)} to dfs with len ({len(dfs)}))")
             dfs.append(file_df)
         except ValueError:
             # if verbose:
