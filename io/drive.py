@@ -140,7 +140,7 @@ def load_file_to_df(f, verbose=False, context=None):
     filename, ext = f["name"].split(".")
 
     if filename.count("__") != 2:
-        raise Exception("File name is not following the expected format.")
+        raise ValueError("File name is not following the expected format.")
 
     location, date, employee = filename.split("__")
 
@@ -207,7 +207,7 @@ def load_files_to_df(files=None, dfs_in=None, verbose=False, context=None):
         try:
             file_df = load_file_to_df(f, verbose=verbose, context=context)
             dfs.append(file_df)
-        except Exception:
+        except ValueError:
             # if verbose:
             msg = f"File name '{f['name']}' is not following the expected format."
             if context is not None:
