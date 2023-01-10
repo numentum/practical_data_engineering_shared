@@ -140,7 +140,9 @@ def load_file_to_df(f, verbose=False, context=None):
     filename, ext = f["name"].split(".")
 
     if filename.count("__") != 2:
-        raise ValueError("File name is not following the expected format.")
+        raise ValueError(
+            f"File name '{f['name']}' is not following the expected format. Double underscore count should be 2, but it is {filename.count('__')}."
+        )
 
     location, date, employee = filename.split("__")
 
@@ -148,7 +150,7 @@ def load_file_to_df(f, verbose=False, context=None):
     file_content = download_file(f["id"])
 
     # if verbose:
-    msg = f"File downloaded in {round(time() - start_time, 2)} seconds"
+    msg = f"File '{f['name']}' downloaded in {round(time() - start_time, 2)} seconds."
     if context is not None:
         context.log.info(msg)
     else:
