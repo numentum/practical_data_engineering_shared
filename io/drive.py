@@ -130,34 +130,31 @@ def load_file_to_df(f, verbose=False, context=None):
         Contents of the loaded file, including the info stored in the filename.
     """
 
-    # if verbose:
-    msg = f"Starting to download {f['name']}"
-    if context is not None:
-        context.log.info(msg)
-    else:
-        print(msg)
-
-    filename, ext = f["name"].split(".")
-
-    if filename.count("__") != 2:
-        msg = f"File name '{f['name']}' is not following the expected format. Double underscore count should be 2, but it is {filename.count('__')}."
+    if verbose:
+        msg = f"Starting to download {f['name']}"
         if context is not None:
             context.log.info(msg)
         else:
             print(msg)
-        raise ValueError(msg)
+
+    filename, ext = f["name"].split(".")
+
+    if filename.count("__") != 2:
+        raise ValueError(
+            f"File name '{f['name']}' is not following the expected format. Double underscore count should be 2, but it is {filename.count('__')}."
+        )
 
     location, date, employee = filename.split("__")
 
     start_time = time()
     file_content = download_file(f["id"])
 
-    # if verbose:
-    msg = f"File '{f['name']}' downloaded in {round(time() - start_time, 2)} seconds."
-    if context is not None:
-        context.log.info(msg)
-    else:
-        print(msg)
+    if verbose:
+        msg = f"File '{f['name']}' downloaded in {round(time() - start_time, 2)} seconds."
+        if context is not None:
+            context.log.info(msg)
+        else:
+            print(msg)
 
     file_df = pd.read_excel(io=file_content)
 
@@ -165,12 +162,6 @@ def load_file_to_df(f, verbose=False, context=None):
     file_df["location"] = location
     file_df["employee"] = employee
     file_df["date"] = date
-
-    msg = f"Returning file '{f['name']}'."
-    if context is not None:
-        context.log.info(msg)
-    else:
-        print(msg)
 
     return file_df
 
@@ -206,12 +197,6 @@ def load_files_to_df(files=None, dfs_in=None, verbose=False, context=None):
     if files is None:
         files = list_files()
 
-    msg = f"Starting `load_files_to_df` with {len(files)} files."
-    if context is not None:
-        context.log.info(msg)
-    else:
-        print(msg)
-
     # Create empty list as aggregator if no list was passed
     if dfs_in is not None:
         dfs = dfs_in
@@ -221,28 +206,16 @@ def load_files_to_df(files=None, dfs_in=None, verbose=False, context=None):
     # Init list to collect malformed filenames
     malformed_filenames = []
     for f in files:
-        msg = f"Starting file '{f}'"
-        if context is not None:
-            context.log.info(msg)
-        else:
-            print(msg)
         try:
             file_df = load_file_to_df(f, verbose=verbose, context=context)
-
-            msg = f"Appending {len(file_df)} to dfs with len ({len(dfs)}))"
-            if context is not None:
-                context.log.info(msg)
-            else:
-                print(msg)
-
             dfs.append(file_df)
         except ValueError:
-            # if verbose:
-            msg = f"File name '{f['name']}' is not following the expected format."
-            if context is not None:
-                context.log.info(msg)
-            else:
-                print(msg)
+            if verbose:
+                msg = f"File name '{f['name']}' is not following the expected format."
+                if context is not None:
+                    context.log.info(msg)
+                else:
+                    print(msg)
 
             malformed_filenames.append(f["name"])
             continue
@@ -285,12 +258,6 @@ def parallel_load_files_to_df(thread_count=25, verbose=False, context=None):
     dfs = []
     threads = []
     for chunk in file_chunks:
-        msg = f"Starting chunk with {len(chunk)} files"
-        if context is None:
-            print(msg)
-        else:
-            context.log.info(msg)
-
         t = Thread(target=load_files_to_df, args=(chunk, dfs, verbose, context))
         t.start()
         threads.append(t)
