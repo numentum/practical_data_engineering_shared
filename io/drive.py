@@ -1,5 +1,6 @@
 import io
 import os
+import json
 import numpy as np
 import pandas as pd
 from os import path
@@ -33,7 +34,7 @@ def create_drive_client(creds_path="./credentials.json"):
     else:
         drive_creds = os.getenv("DRIVE_CREDS")
         assert drive_creds is not None, "DRIVE_CREDS environment variable not set"
-        credentials = service_account.Credentials.from_service_account_info(drive_creds)
+        credentials = service_account.Credentials.from_service_account_info(json.loads(drive_creds))
 
     scoped_credentials = credentials.with_scopes(scopes)
 
