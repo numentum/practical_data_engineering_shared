@@ -200,6 +200,12 @@ def load_files_to_df(files=None, dfs_in=None, verbose=False, context=None):
     if files is None:
         files = list_files()
 
+    msg = f"Starting `load_files_to_df` with {len(files)} files."
+    if context is not None:
+        context.log.info(msg)
+    else:
+        print(msg)
+
     # Create empty list as aggregator if no list was passed
     if dfs_in is not None:
         dfs = dfs_in
@@ -211,7 +217,13 @@ def load_files_to_df(files=None, dfs_in=None, verbose=False, context=None):
     for f in files:
         try:
             file_df = load_file_to_df(f, verbose=verbose, context=context)
-            context.log.info(f"Appending {len(file_df)} to dfs with len ({len(dfs)}))")
+
+            msg = f"Appending {len(file_df)} to dfs with len ({len(dfs)}))"
+            if context is not None:
+                context.log.info(msg)
+            else:
+                print(msg)
+
             dfs.append(file_df)
         except ValueError:
             # if verbose:
