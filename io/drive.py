@@ -1,4 +1,5 @@
 import io
+import os
 import numpy as np
 import pandas as pd
 from os import path
@@ -25,11 +26,17 @@ def create_drive_client(creds_path="./credentials.json"):
         If the specified credentials file does not exist.
     """
 
-    if not path.isfile(creds_path):
-        raise FileNotFoundError(f"Credentials JSON at '{creds_path}' does not exist.")
-
     scopes = ["https://www.googleapis.com/auth/drive.readonly"]
-    credentials = service_account.Credentials.from_service_account_file(creds_path)
+
+    if path.isfile(creds_path):
+        if not path.isfile(creds_path):
+            raise FileNotFoundError(f"Credentials JSON at '{creds_path}' does not exist.")
+        credentials = service_account.Credentials.from_service_account_file(creds_path)
+    else:
+        drive_creds = os.getenv("DRIVE_CREDS")
+        assert drive_creds is not None, "DRIVE_CREDS environment variable not set"
+        credentials = service_account.Credentials.from_service_account_info(drive_creds)
+
     scoped_credentials = credentials.with_scopes(scopes)
 
     drive = build("drive", "v3", credentials=scoped_credentials)
