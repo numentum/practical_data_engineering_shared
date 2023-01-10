@@ -229,7 +229,7 @@ def add_error(errors, orig_filename, sale_number, error):
         errors[orig_filename].append(error_string)
 
 
-def transform_market_transactions(df, verbose=False):
+def transform_market_transactions(df, verbose=False, context=None):
     # Gather prerequisites of the operations
     products_df = extract_table("products")
     name_to_sku = get_lookup_fn(products_df, from_col="name", to_col="sku")
@@ -304,6 +304,12 @@ def transform_market_transactions(df, verbose=False):
         transactions.append(transaction)
 
     transactions_df = pd.DataFrame(transactions)
+
+    msg = f"Transformed {len(transactions_df)} transactions."
+    if context is None:
+        print(msg)
+    else:
+        context.log.info(msg)
 
     return transactions_df, errors
 
