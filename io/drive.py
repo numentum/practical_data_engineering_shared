@@ -130,12 +130,12 @@ def load_file_to_df(f, verbose=False, context=None):
         Contents of the loaded file, including the info stored in the filename.
     """
 
-    if verbose:
-        msg = f"Starting to download {f['name']}"
-        if context is not None:
-            context.log.info(msg)
-        else:
-            print(msg)
+    # if verbose:
+    msg = f"Starting to download {f['name']}"
+    if context is not None:
+        context.log.info(msg)
+    else:
+        print(msg)
 
     filename, ext = f["name"].split(".")
 
@@ -147,12 +147,12 @@ def load_file_to_df(f, verbose=False, context=None):
     start_time = time()
     file_content = download_file(f["id"])
 
-    if verbose:
-        msg = f"File downloaded in {round(time() - start_time, 2)} seconds"
-        if context is not None:
-            context.log.info(msg)
-        else:
-            print(msg)
+    # if verbose:
+    msg = f"File downloaded in {round(time() - start_time, 2)} seconds"
+    if context is not None:
+        context.log.info(msg)
+    else:
+        print(msg)
 
     file_df = pd.read_excel(io=file_content)
 
@@ -208,12 +208,12 @@ def load_files_to_df(files=None, dfs_in=None, verbose=False, context=None):
             file_df = load_file_to_df(f, verbose=verbose, context=context)
             dfs.append(file_df)
         except Exception:
-            if verbose:
-                msg = f"File name '{f['name']}' is not following the expected format."
-                if context is not None:
-                    context.log.info(msg)
-                else:
-                    print(msg)
+            # if verbose:
+            msg = f"File name '{f['name']}' is not following the expected format."
+            if context is not None:
+                context.log.info(msg)
+            else:
+                print(msg)
 
             malformed_filenames.append(f["name"])
             continue
