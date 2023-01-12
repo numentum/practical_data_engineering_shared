@@ -36,7 +36,7 @@ def break_down_total(row, name_to_price):
     return unit_price, quantity, tax
 
 
-def transform_online_transactions(df, products_df=None):
+def transform_online_transactions(df, products_df=None, context=None):
     # Gather prerequisites of the operations
     if products_df is None:
         products_df = extract_table("products")
@@ -50,6 +50,9 @@ def transform_online_transactions(df, products_df=None):
 
         if pd.isna(data):
             continue
+
+        context.log.warn(type(data))
+        context.log.warn(data)
 
         # 8. Break down total to unit_price, quantity and tax given tax rate and product
         unit_price, quantity, tax = break_down_total(data, name_to_price)
