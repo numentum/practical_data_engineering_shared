@@ -1,3 +1,4 @@
+import json
 import pandas as pd
 from datetime import datetime
 
@@ -45,7 +46,7 @@ def transform_online_transactions(df, products_df=None):
 
     transactions = []
     for i, row in df.iterrows():
-        data = row["stripe_data"]
+        data = json.loads(row["stripe_data"])
 
         if pd.isna(data):
             continue
